@@ -10,5 +10,7 @@ dependencies:
   - pandas
   - scipy
   - pip
+  - xgboost
+  - scikit-learn
   - pip:
       - PSID
