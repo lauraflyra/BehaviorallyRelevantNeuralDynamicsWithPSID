@@ -1,14 +1,6 @@
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 import PSID
 from PSID.evaluation import evalPrediction
-
-# explore dimensions of behaviorally relevant dynamics
-# in here all latent space dimensions will be used to prioritize behavior, meaning n1 = nx
-
-PATH_FEATURES = "/home/lauraflyra/Documents/BCCN/Lab_Rotation_USC/Code/Data/py_neuromodulation_derivatives/sub-000_ses-right_task-force_run-3/sub-000_ses-right_task-force_run-3_FEATURES.csv"
-data_features = pd.read_csv(PATH_FEATURES, index_col=0)
 
 def cross_validation_split(data, k_folds, k):
     size_fold = int(data.shape[0]/k_folds)
@@ -17,7 +9,7 @@ def cross_validation_split(data, k_folds, k):
     return test_set, training_set
 
 
-def cross_validation(neural_data, behavior, k_folds, nx, n1, i, metrics = "CC"):
+def cross_validation(neural_data, behavior, k_folds, nx, n1, i, metrics = "R2"):
     """
 
     :param neural_data: time x neural data dimensions
@@ -43,22 +35,6 @@ def cross_validation(neural_data, behavior, k_folds, nx, n1, i, metrics = "CC"):
         eval_over_folds[k] = np.mean(eval)
 
     return eval_over_folds
-
-
-feature_df = pd.concat([data_features.filter(like='STN'),data_features.filter(like='ECOG')], axis = 1).filter(like='bandpass_activity').to_numpy()
-behavior_df = data_features["MOV_LEFT_CLEAN"].to_numpy().reshape(-1, 1)
-
-K_FOLDS = 5
-N_DIMS = 10
-
-eval_over_dims = np.zeros((N_DIMS, K_FOLDS))
-behavior_dims_latent = np.linspace(2, 20, N_DIMS, dtype=int)
-for dim in range(N_DIMS):
-    nx = n1 = behavior_dims_latent[dim]
-    i = max(behavior_dims_latent)
-    eval_over_dims[dim,:] = cross_validation(feature_df, behavior_df, K_FOLDS, nx, n1, i)
-
-
 
 
 
