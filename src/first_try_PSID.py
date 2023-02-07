@@ -58,18 +58,18 @@ ecog_test = ecog_right_0[test_idx, :]
 mov_train = mov_left_clean[train_idx, :]
 mov_test = mov_left_clean[test_idx, :]
 
-idSys = PSID.PSID(ecog_train, mov_train, 2, 2, 10)
+idSys = PSID.PSID(ecog_train, mov_train, 8, 8, 8)
 
 # Predict behavior using the learned model
 mov_test_pred, ecog_test_pred, x_test_pred = idSys.predict(ecog_test)
 
-CC = evalPrediction(mov_test, mov_test_pred, "CC")
+R2 = evalPrediction(mov_test, mov_test_pred, "R2")
 
-print('Behavior decoding CC:\n  PSID => {:.3g}'.format(np.mean(CC)))
+print('Behavior decoding CC:\n  PSID => {:.3g}'.format(np.mean(R2)))
 
 plt.plot(mov_test.reshape(-1,), label = 'data')
 plt.plot(mov_test_pred.reshape(-1,), label = 'prediction')
-plt.title("Grip force decoding for test data with raw data from \n all ECOG channels as input, CC = {:.3g}".format(np.mean(CC)), fontsize = 15)
+plt.title("Grip force decoding for test data with raw data from \n all ECOG channels as input, R2 = {:.3g}".format(np.mean(R2)), fontsize = 15)
 plt.xlabel("Time [ms]", fontsize = 15)
 plt.ylabel("Grip force [a.u]", fontsize = 15)
 plt.legend(fontsize = 12)
@@ -107,7 +107,7 @@ feat_test = feat_test_df.to_numpy()[test_idx_features]
 mov_features_train = data_features["MOV_LEFT_CLEAN"].to_numpy().reshape(-1, 1)[train_idx_features]
 mov_features_test = data_features["MOV_LEFT_CLEAN"].to_numpy().reshape(-1, 1)[test_idx_features]
 
-idSys = PSID.PSID(feat_train, mov_features_train, 2, 2, 10)
+idSys = PSID.PSID(feat_train, mov_features_train, 8, 8, 8)
 
 # TODO: explore other dimensions??
 # TODO: choose other combinations of features from py_neuromodulation
@@ -115,15 +115,15 @@ idSys = PSID.PSID(feat_train, mov_features_train, 2, 2, 10)
 # Predict behavior using the learned model
 mov_features_test_pred, feat_test_pred, x_feat_test_pred = idSys.predict(feat_test)
 
-CC_feat = evalPrediction(mov_features_test, mov_features_test_pred, "CC")
+R2_feat = evalPrediction(mov_features_test, mov_features_test_pred, "R2")
 
-print('Behavior decoding CC:\n  PSID => {:.3g}'.format(np.mean(CC_feat)))
+print('Behavior decoding CC:\n  PSID => {:.3g}'.format(np.mean(R2_feat)))
 
 time_array = data_features['time'].to_numpy().reshape(-1, 1)[test_idx_features]
 plt.plot(time_array, mov_features_test.reshape(-1,), label = 'data')
 plt.plot(time_array, mov_features_test_pred.reshape(-1,), label = 'prediction')
-plt.title("Grip force decoding for test data with bandpass features \nfrom all ECOG and STN channels as input, CC = {:.3g}".format(np.mean(CC_feat)), fontsize = 15)
-plt.xlabel("Time [ms]", fontsize = 15)
-plt.ylabel("Grip force [a.u]", fontsize = 15)
+plt.title("Grip force decoding for test data with bandpass features \nfrom all ECOG and STN channels as input, R2 = {:.3g}".format(np.mean(R2_feat)), fontsize = 12)
+plt.xlabel("Time [ms]", fontsize = 12)
+plt.ylabel("Grip force [a.u]", fontsize = 12)
 plt.legend(fontsize = 12)
 plt.show()
