@@ -22,7 +22,7 @@ def train(features, behavior, nx, n1, i, eval_metrics = "R2", train_whole_data =
 
         print('Behavior decoding r2:\n  PSID => {:.3g}'.format(np.mean(eval_result)))
 
-        return idSys, mov_features_test_pred, mov_features_test, test_idx_features
+        return idSys, mov_features_test_pred, mov_features_test, test_idx_features, eval_result
     else:
         idSys = PSID.PSID(features, behavior, nx, n1, i)
 
@@ -30,12 +30,12 @@ def train(features, behavior, nx, n1, i, eval_metrics = "R2", train_whole_data =
 
 
 
-def plot_movement_pred(df, mov_features_test_pred, mov_features_test, test_idx_features):
+def plot_movement_pred(df, mov_features_test_pred, mov_features_test, test_idx_features, eval_result):
 
     time_array = df['time'].to_numpy().reshape(-1, 1)[test_idx_features]
     plt.plot(time_array, mov_features_test.reshape(-1,), label = 'data')
     plt.plot(time_array, mov_features_test_pred.reshape(-1,), label = 'prediction')
-    plt.title("Hand decoding for test data with bandpass features \nfrom all ECOG and STN channels as input, R^2 = {:.3g}".format(np.mean(r2_feat)), fontsize = 15)
+    plt.title("Hand decoding for test data with bandpass features \nfrom all ECOG and STN channels as input, R^2 = {:.3g}".format(np.mean(eval_result)), fontsize = 15)
     plt.xlabel("Time [ms]", fontsize = 15)
     plt.ylabel("Grip force [a.u]", fontsize = 15)
     plt.legend(fontsize = 12)
