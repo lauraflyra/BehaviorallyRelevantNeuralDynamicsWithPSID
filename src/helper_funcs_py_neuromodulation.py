@@ -75,3 +75,55 @@ def get_coord_list(
         coord_names = None
 
     return coord_list, coord_names
+
+def get_epochs(data, y_, epoch_len, sfreq, threshold=0):
+    """Return epoched data.
+
+    Parameters
+    ----------
+    data : np.ndarray
+        array of extracted features of shape (n_samples, n_channels, n_features)
+    y_ : np.ndarray
+        array of labels e.g. ones for movement and zeros for
+        no movement or baseline corr. rotameter data
+    sfreq : int/float
+        sampling frequency of data
+    epoch_len : int
+        length of epoch in seconds
+    threshold : int/float
+        (Optional) threshold to be used for identifying events
+        (default=0 for y_tr with only ones
+        and zeros)
+
+    Returns
+    -------
+    epoch_ np.ndarray
+        array of epoched ieeg data with shape (epochs,samples,channels,features)
+    y_arr np.ndarray
+        array of epoched event label data with shape (epochs,samples)
+    """
+
+    epoch_lim = int(epoch_len * sfreq)
+
+    ind_mov = np.where(np.diff(np.array(y_ > threshold) * 1) == 1)[0]
+
+    low_limit = ind_mov > epoch_lim / 2
+    up_limit = ind_mov < y_.shape[0] - epoch_lim / 2
+
+    ind_mov = ind_mov[low_limit & up_limit]
+
+    epoch_ = np.zeros(
+        [ind_mov.shape[0], epoch_lim, data.shape[1], data.shape[2]]
+    )
+
+    y_arr = np.zeros([ind_mov.shape[0], int(epoch_lim)])
+
+    for idx, i in enumerate(ind_mov):
+
+        epoch_[idx, :, :, :] = data[
+            i - epoch_lim // 2 : i + epoch_lim // 2, :, :
+        ]
+
+        y_arr[idx, :] = y_[i - epoch_lim // 2 : i + epoch_lim // 2]
+
+    return epoch_, y_arr
